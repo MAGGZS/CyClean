@@ -1,0 +1,30 @@
+# Configuração mínima do Supabase CLI para este projeto.
+# Só usamos o Postgres: migrations em ./migrations, aplicadas com `npx supabase db push`.
+project_id = "descarta"
+
+[db]
+major_version = 17
+
+[api]
+enabled = false
+
+[auth]
+enabled = false
+
+[storage]
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = true
+
+[inbucket]
+enabled = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false

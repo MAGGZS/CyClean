@@ -1,0 +1,35 @@
+{
+  "name": "@descarta/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "hash-password": "tsx scripts/hash-password.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/multipart": "^9.3.0",
+    "@fastify/rate-limit": "^10.3.0",
+    "@google/genai": "^1.29.0",
+    "@node-rs/argon2": "^2.0.2",
+    "fastify": "^5.6.1",
+    "groq-sdk": "^1.6.0",
+    "openai": "^6.8.1",
+    "postgres": "^3.4.7",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@descarta/shared": "workspace:*",
+    "@types/node": "^22.19.0",
+    "pino-pretty": "^13.1.2",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

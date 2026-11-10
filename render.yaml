@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: descarta-api
+    runtime: node
+    region: ohio # Região dos EUA com menor latência para o Brasil no Render
+    plan: free
+    branch: main
+    rootDir: .
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build:api
+    startCommand: node apps/api/dist/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: DATABASE_URL
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: ADMIN_ROUTE
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false

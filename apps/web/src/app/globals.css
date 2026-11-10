@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+:root {
+  /* Paleta Eco Horizon: nada fora dela, exceto as cores das lixeiras (CONAMA 275) */
+  --forest-900: #12241a;
+  --forest-700: #2f5a45;
+  --sage-500: #5f8d6b;
+  --mint-300: #96bca1;
+  --sand-200: #d6d5b0;
+  --paper-50: #f2f3e7;
+
+  /* Camada sólida sobre fotos, no lugar de degradê */
+  --scrim: rgba(18, 36, 26, 0.45);
+  --scrim-heavy: rgba(18, 36, 26, 0.72);
+
+  /* Vidro fosco otimizado para alta performance */
+  --glass-bg: rgba(18, 36, 26, 0.78);
+  --glass-border: rgba(242, 243, 231, 0.14);
+  --glass-blur: 10px;
+  --hairline: rgba(242, 243, 231, 0.1);
+
+  /* Raios: frame > card > interno (raio interno = externo - padding) */
+  --radius-frame: 0px;
+  --radius-card: 28px;
+  --radius-inner: 16px;
+  --radius-pill: 9999px;
+
+  /* Margem do frame em volta de cada tela */
+  --gutter: 0px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 0px;
+  }
+}
+
+@theme {
+  --color-forest-900: #12241a;
+  --color-forest-700: #2f5a45;
+  --color-sage-500: #5f8d6b;
+  --color-mint-300: #96bca1;
+  --color-sand-200: #d6d5b0;
+  --color-paper-50: #f2f3e7;
+
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: var(--font-archivo), "Arial Black", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+html {
+  background-color: var(--forest-900);
+  color: var(--paper-50);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--forest-900);
+  color: var(--paper-50);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--mint-300);
+  color: var(--forest-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--mint-300);
+  outline-offset: 3px;
+}
+
+/* Classes de componente ficam em camada, para os utilitários do Tailwind (md:hidden etc.) vencerem */
+@layer components {
+  /* ---------- Tipografia ---------- */
+
+  /* Display: Archivo expandida e pesada, para as palavras gigantes */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 125%;
+    font-variation-settings: "wdth" 125;
+    letter-spacing: -0.035em;
+    line-height: 0.86;
+  }
+
+  /* Títulos de seção: mesma família, largura normal */
+  .titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 112%;
+    font-variation-settings: "wdth" 112;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+  }
+
+  /* Rótulo pequeno em caixa alta com tracking largo */
+  .rotulo {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Frame: telas em largura cheia ---------- */
+
+  .frame {
+    position: relative;
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: var(--forest-900);
+    isolation: isolate;
+  }
+
+  .frame + .frame {
+    margin-top: 0;
+  }
+
+  /* ---------- Vidro fosco: só nos cards principais ---------- */
+
+  .glass-surface {
+    background-color: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-card);
+    transform: translateZ(0);
+  }
+
+  /* ---------- Botões pill ---------- */
+
+  .btn-pill-solid,
+  .btn-pill-mint,
+  .btn-pill-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 44px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 180ms var(--ease-out),
+      border-color 180ms var(--ease-out),
+      color 180ms var(--ease-out);
+  }
+
+  .btn-pill-solid:active,
+  .btn-pill-mint:active,
+  .btn-pill-outline:active {
+    transform: scale(0.97);
+  }
+
+  .btn-pill-solid:disabled,
+  .btn-pill-mint:disabled,
+  .btn-pill-outline:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-pill-solid {
+    background-color: var(--paper-50);
+    color: var(--forest-900);
+  }
+
+  .btn-pill-mint {
+    background-color: var(--mint-300);
+    color: var(--forest-900);
+  }
+
+  .btn-pill-outline {
+    background-color: transparent;
+    color: var(--paper-50);
+    border: 1px solid rgba(242, 243, 231, 0.28);
+  }
+
+  /* Botão circular (play, setas, enviar) */
+  .btn-round {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 180ms var(--ease-out),
+      color 180ms var(--ease-out);
+  }
+
+  .btn-round:active {
+    transform: scale(0.94);
+  }
+
+  .btn-round:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-pill-solid:hover:not(:disabled) {
+      background-color: var(--mint-300);
+    }
+    .btn-pill-mint:hover:not(:disabled) {
+      background-color: var(--paper-50);
+    }
+    .btn-pill-outline:hover:not(:disabled) {
+      border-color: var(--mint-300);
+      color: var(--mint-300);
+    }
+    .link-nav:hover {
+      color: var(--paper-50);
+    }
+  }
+
+  .link-nav {
+    color: var(--sand-200);
+    transition: color 180ms var(--ease-out);
+  }
+
+  /* ---------- Estados iniciais das animações ---------- */
+
+  /* Escondido até a timeline do hero assumir. Sem JS, o <noscript> do layout libera. */
+  .pre-anim {
+    visibility: hidden;
+  }
+
+  /* Linhas do SplitText com máscara */
+  .split-mask {
+    overflow: clip;
+  }
+
+  /* Barra de rolagem do chat */
+  .rolagem-fina {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(242, 243, 231, 0.18) transparent;
+  }
+
+  /* Faixa das lixeiras rola na horizontal no celular, sem barra aparente */
+  .sem-barra {
+    scrollbar-width: none;
+  }
+  .sem-barra::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+}

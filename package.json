@@ -1,0 +1,28 @@
+{
+  "name": "descarta",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Descarta: assistente de descarte correto com IA",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "setup:local": "node scripts/setup-local.mjs",
+    "dev:db": "node scripts/dev-db.mjs",
+    "dev:web": "pnpm --filter @descarta/web dev",
+    "dev:api": "pnpm --filter @descarta/api dev",
+    "dev": "concurrently -n db,api,web -c cyan,magenta,green \"pnpm dev:db\" \"node scripts/dev-db.mjs --wait && pnpm dev:api\" \"pnpm dev:web\"",
+    "build:shared": "pnpm --filter @descarta/shared build",
+    "build:api": "pnpm --filter @descarta/shared build && pnpm --filter @descarta/api build",
+    "build:web": "pnpm --filter @descarta/shared build && pnpm --filter @descarta/web build",
+    "typecheck": "pnpm -r typecheck",
+    "hash-password": "node scripts/hash-password.cjs",
+    "gen-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
+    "@electric-sql/pglite-socket": "^0.2.19",
+    "concurrently": "^10.0.7"
+  }
+}
