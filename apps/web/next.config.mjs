@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
-const apiUrl = process.env.API_URL || "http://localhost:4000";
+const apiUrl =
+  process.env.API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://descarta-api-fa7a.onrender.com"
+    : "http://localhost:4000");
 
 const nextConfig = {
   reactStrictMode: true,
