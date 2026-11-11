@@ -16,9 +16,7 @@ services:
       - key: PORT
         value: "10000"
       - key: DATABASE_URL
-        fromDatabase:
-          name: cyclean-db
-          property: connectionString
+        sync: false
       - key: ENCRYPTION_KEY
         value: TekiFUEvwA9wlT7Kq0idCju3St0l42koHjnM1J/uVUI=
       - key: SESSION_SECRET
@@ -31,8 +29,3 @@ services:
         value: painel-x7
       - key: ALLOWED_ORIGIN
         value: https://cyclean-rho.vercel.app
-
-databases:
-  - name: cyclean-db
-    plan: free
-    region: ohio
