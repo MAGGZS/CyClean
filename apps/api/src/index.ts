@@ -4,6 +4,7 @@ import cookie from "@fastify/cookie";
 import multipart from "@fastify/multipart";
 import rateLimit from "@fastify/rate-limit";
 import { env, emProducao } from "./env.js";
+import { initDb } from "./db.js";
 import { healthRoutes } from "./routes/health.js";
 import { analisarRoutes } from "./routes/analisar.js";
 import { chatRoutes } from "./routes/chat.js";
@@ -96,6 +97,8 @@ app.setErrorHandler((error: any, req, reply) => {
 
 const start = async () => {
   try {
+    await initDb();
+    app.log.info("Banco de dados pronto (tabelas verificadas).");
     await app.listen({ port: env.PORT, host: "0.0.0.0" });
     app.log.info(`Servidor Descarta API iniciado na porta ${env.PORT}`);
   } catch (err) {

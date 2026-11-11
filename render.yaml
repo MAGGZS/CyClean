@@ -2,7 +2,7 @@ services:
   - type: web
     name: descarta-api
     runtime: node
-    region: ohio # Região dos EUA com menor latência para o Brasil no Render
+    region: ohio
     plan: free
     branch: main
     rootDir: .
@@ -16,16 +16,23 @@ services:
       - key: PORT
         value: "10000"
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: cyclean-db
+          property: connectionString
       - key: ENCRYPTION_KEY
-        sync: false
+        value: TekiFUEvwA9wlT7Kq0idCju3St0l42koHjnM1J/uVUI=
       - key: SESSION_SECRET
-        sync: false
+        value: ZgBWcM91OkgUcfFcoRcXfGHV3dMPwGy46COxpWo7vA8=
       - key: ADMIN_USER
-        sync: false
+        value: admin
       - key: ADMIN_PASSWORD_HASH
-        sync: false
+        value: "$argon2id$v=19$m=65536,t=3,p=4$4VrFLlvaL5Ut0y17yUV0Mg$PXmLjJG+w/SYKXf6qJPisNWHsnHayT9jCSnB/6FRlqg"
       - key: ADMIN_ROUTE
-        sync: false
+        value: painel-x7
       - key: ALLOWED_ORIGIN
-        sync: false
+        value: https://cyclean-rho.vercel.app
+
+databases:
+  - name: cyclean-db
+    plan: free
+    region: ohio
