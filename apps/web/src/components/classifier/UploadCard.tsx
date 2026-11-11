@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Camera, ImagePlus, RefreshCw, ScanLine, ShieldCheck, TriangleAlert } from "lucide-react";
 import { gsap, useGSAP, prefereMovimentoReduzido } from "../../lib/gsap";
 import { ACEITA_INPUT, type ImagemPreparada } from "../../lib/imagem";
+import { GlassIcon } from "../GlassIcon";
 
 export function UploadCard({
   imagem,
@@ -116,9 +117,18 @@ export function UploadCard({
               : "border-paper-50/20 bg-paper-50/[0.02] hover:border-mint-300/60 hover:bg-paper-50/[0.04]"
           }`}
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-paper-50/10 bg-paper-50/[0.05] text-mint-300 transition-transform group-hover:scale-105">
-            <ImagePlus className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
-          </div>
+          <GlassIcon
+            plate="tilt"
+            size={52}
+            radius={18}
+            tilt="-10deg"
+            spread={0.25}
+            plateBg="linear-gradient(135deg, rgba(150, 188, 161, 0.45) 0%, rgba(47, 90, 69, 0.75) 100%)"
+            ink="var(--mint-300)"
+            className="transition-transform duration-300 group-hover:scale-105"
+          >
+            <ImagePlus className="h-6 w-6" strokeWidth={1.6} aria-hidden="true" />
+          </GlassIcon>
 
           <div className="w-full">
             <p className="titulo text-2xl text-paper-50 sm:text-3xl">
@@ -135,7 +145,7 @@ export function UploadCard({
                   e.stopPropagation();
                   escolher();
                 }}
-                className="btn-pill-solid px-6 text-sm"
+                className="btn-pill-solid px-6 text-sm shadow-[0_8px_20px_-6px_rgba(0,0,0,0.4),inset_0_1px_1px_0_rgba(255,255,255,0.7)]"
               >
                 Escolher foto
               </button>
@@ -145,7 +155,7 @@ export function UploadCard({
                   e.stopPropagation();
                   cameraRef.current?.click();
                 }}
-                className="btn-pill-outline px-6 text-sm md:hidden"
+                className="btn-pill-outline px-6 text-sm md:hidden backdrop-blur-md"
               >
                 <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 Tirar foto
@@ -168,8 +178,17 @@ export function UploadCard({
                 className="h-full w-full object-contain p-2"
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-                <ImagePlus className="h-7 w-7 text-mint-300" strokeWidth={1.25} aria-hidden="true" />
+              <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+                <GlassIcon
+                  plate="circle"
+                  size={54}
+                  radius="50%"
+                  spread={0.25}
+                  plateBg="linear-gradient(135deg, rgba(150, 188, 161, 0.4) 0%, rgba(47, 90, 69, 0.7) 100%)"
+                  ink="var(--mint-300)"
+                >
+                  <ImagePlus className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
+                </GlassIcon>
                 <p className="text-sm font-medium text-paper-50">{imagem.nome}</p>
                 <p className="text-xs text-sand-200/70">
                   Seu navegador não mostra prévia de HEIC, mas a foto pode ser analisada.
@@ -190,11 +209,11 @@ export function UploadCard({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-3 pt-5">
-            <button type="button" disabled={analisando} onClick={escolher} className="btn-pill-outline px-5 text-sm">
+            <button type="button" disabled={analisando} onClick={escolher} className="btn-pill-outline px-5 text-sm backdrop-blur-md shadow-sm">
               <RefreshCw className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
               Trocar
             </button>
-            <button type="button" disabled={analisando} onClick={onAnalisar} className="btn-pill-solid px-7 text-sm">
+            <button type="button" disabled={analisando} onClick={onAnalisar} className="btn-pill-solid px-7 text-sm shadow-[0_8px_20px_-6px_rgba(0,0,0,0.4),inset_0_1px_1px_0_rgba(255,255,255,0.7)]">
               <ScanLine className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
               {analisando ? "Analisando" : "Analisar"}
             </button>

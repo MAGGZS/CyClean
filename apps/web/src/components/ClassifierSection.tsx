@@ -8,6 +8,7 @@ import { gsap, useGSAP, MQ, prefereMovimentoReduzido } from "../lib/gsap";
 import { prepararImagem, validarArquivo, type ImagemPreparada } from "../lib/imagem";
 import { fetchAcordando, lerSSE } from "../lib/sse";
 import { Noise } from "./Noise";
+import { GlassIcon } from "./GlassIcon";
 import { Marca } from "./Navbar";
 import { UploadCard } from "./classifier/UploadCard";
 import { ResultadoAnalise } from "./classifier/ResultadoAnalise";
@@ -50,7 +51,7 @@ function Mensagem({
   if (lado === "usuario") {
     return (
       <div ref={ref} className="flex justify-end">
-        <div className="max-w-[85%] rounded-[20px] rounded-br-[6px] bg-paper-50 px-4 py-3 text-sm leading-relaxed text-forest-900">
+        <div className="max-w-[85%] rounded-[20px] rounded-br-[6px] bg-paper-50/95 px-4 py-3 text-sm leading-relaxed text-forest-900 shadow-md backdrop-blur-md">
           <span className="sr-only">Você: </span>
           {children}
         </div>
@@ -86,7 +87,7 @@ function Balao({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="w-fit max-w-full whitespace-pre-wrap rounded-[20px] rounded-tl-[6px] border border-paper-50/10 bg-paper-50/[0.08] px-4 py-3 text-sm leading-relaxed text-paper-50 shadow-sm">
+    <div className="glass-bubble w-fit max-w-full whitespace-pre-wrap rounded-[20px] rounded-tl-[6px] px-4 py-3 text-sm leading-relaxed text-paper-50">
       {conteudo}
     </div>
   );
@@ -357,7 +358,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
             className="glass-surface flex h-[34rem] sm:h-[38rem] lg:h-[42rem] max-h-[34rem] sm:max-h-[38rem] lg:max-h-[42rem] flex-col overflow-hidden"
           >
             {/* Cabeçalho do assistente */}
-            <div className="flex shrink-0 items-center justify-between border-b border-paper-50/10 px-5 py-4 sm:px-6">
+            <div className="flex shrink-0 items-center justify-between border-b border-paper-50/10 px-5 py-4 sm:px-6 backdrop-blur-md">
               <div className="flex items-center gap-2.5">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-300 opacity-75" />
@@ -419,7 +420,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
                     key={s}
                     type="button"
                     onClick={() => perguntar(s)}
-                    className="btn-pill-outline min-h-9 px-4 text-xs"
+                    className="glass-pill min-h-9 px-4 text-xs font-medium text-paper-50 transition-all hover:border-mint-300 hover:text-mint-300 hover:scale-[1.02]"
                   >
                     {s}
                   </button>
@@ -432,7 +433,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
                 e.preventDefault();
                 perguntar(pergunta);
               }}
-              className="flex shrink-0 items-center gap-2 border-t border-paper-50/10 p-3 sm:p-4"
+              className="flex shrink-0 items-center gap-2 border-t border-paper-50/10 p-3 sm:p-4 backdrop-blur-md"
             >
               <label htmlFor="pergunta" className="sr-only">
                 Pergunta sobre o descarte
@@ -445,7 +446,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
                 maxLength={1000}
                 autoComplete="off"
                 placeholder={contexto ? "Pergunte sobre esse material..." : "Pergunte sobre descarte..."}
-                className="h-12 min-w-0 flex-1 rounded-full border border-paper-50/10 bg-paper-50/[0.04] px-5 text-sm text-paper-50 placeholder:text-sand-200/60 focus:border-mint-300 focus:outline-none focus:ring-1 focus:ring-mint-300/30"
+                className="glass-input h-12 min-w-0 flex-1 rounded-full px-5 text-sm text-paper-50 placeholder:text-sand-200/60 focus:border-mint-300 focus:outline-none focus:ring-1 focus:ring-mint-300/40"
               />
               <button
                 type="submit"

@@ -134,7 +134,7 @@ export function ResultadoAnalise({
   onAbrirVideo: (id: string, titulo: string) => void;
 }) {
   return (
-    <div className="w-full rounded-[20px] rounded-tl-[6px] bg-paper-50/[0.06] p-5 sm:p-6">
+    <div className="glass-bubble w-full rounded-[20px] rounded-tl-[6px] p-5 sm:p-6">
       <p className="text-base leading-relaxed text-paper-50">{dados.mensagem}</p>
 
       {dados.itens.length > 0 && (
@@ -155,7 +155,7 @@ export function ResultadoAnalise({
                 <button
                   type="button"
                   onClick={() => onAbrirVideo(v.youtubeId, v.titulo)}
-                  className="group flex w-full items-center gap-3 rounded-[16px] bg-forest-900 p-2 pr-4 text-left transition-colors duration-200 hover:bg-forest-700"
+                  className="group flex w-full items-center gap-3 rounded-[16px] bg-forest-900/80 backdrop-blur-sm border border-paper-50/10 p-2 pr-4 text-left transition-all duration-200 hover:bg-forest-700/80 hover:border-mint-300/40"
                 >
                   <span className="relative block h-14 w-24 shrink-0 overflow-hidden rounded-[10px] bg-forest-700">
                     <Image
