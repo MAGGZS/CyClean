@@ -1,10 +1,19 @@
-# Descarta — Assistente de Descarte Correto com IA
+# CyClean — Assistente de Descarte Correto com IA
 
 Sistema web público que ajuda os cidadãos a descartar resíduos e objetos na lixeira correta, seguindo as diretrizes da **Resolução CONAMA nº 275/2001** e da **Política Nacional de Resíduos Sólidos (Lei nº 12.305/2010)**.
 
 O usuário envia a foto de um resíduo, a inteligência artificial identifica o material, informa a cor e nome da lixeira correta, instruções práticas de preparo (lavagem, separação de rótulos/tampas, redução de volume), erros comuns a evitar, alertas para resíduos especiais (logística reversa) e recomenda vídeos educativos.
 
 O site é 100% público e anônimo: **sem cadastro, sem login, sem cookies de rastreamento e nenhuma imagem é salva em disco ou banco de dados**.
+
+---
+
+## 🌐 URLs de Produção
+
+- **Aplicação Web (Vercel):** [https://cyclean-rho.vercel.app](https://cyclean-rho.vercel.app)
+- **Painel Administrativo:** [https://cyclean-rho.vercel.app/painel-x7](https://cyclean-rho.vercel.app/painel-x7)
+- **API Backend (Render):** [https://descarta-api-fa7a.onrender.com](https://descarta-api-fa7a.onrender.com)
+- **Health Check API:** [https://descarta-api-fa7a.onrender.com/api/health](https://descarta-api-fa7a.onrender.com/api/health)
 
 ---
 
@@ -16,18 +25,18 @@ O sistema é dividido em três camadas hospedadas de forma independente:
 | :--- | :--- | :--- |
 | **Front-end** | **Vercel** (`apps/web`) | Next.js (App Router), Tailwind CSS, animações com GSAP, painel admin seguro |
 | **API** | **Render** (`apps/api`) | Fastify em TypeScript, visão computacional com IA, autenticação argon2id, rate limiting |
-| **Banco** | **Supabase** (`supabase`) | Postgres com RLS ativado (configurações criptografadas, biblioteca de vídeos e métricas agregadas) |
+| **Banco** | **Render PostgreSQL** (`cyclean-db`) | Postgres gerenciado na mesma região privada (`ohio`) com auto-inicialização de schema |
 
 Fluxo de requisições:
 ```
 Navegador → Vercel (Next.js) ──[rewrite /api/*]──> Render (Fastify) ──> Provedor de IA (Groq / Gemini / OpenAI / Claude)
-                                                                 └──> Supabase (Postgres via Pooler)
+                                                                 └──> Render Postgres (cyclean-db)
 ```
 
 ### Regras de Segurança e Privacidade
-- **Nenhuma imagem é salva:** Nem no Supabase, nem em storage S3/Blob, nem em disco do Render. O buffer existe apenas na memória durante a requisição.
-- **Isolamento total de credenciais:** O navegador nunca acessa o Supabase diretamente nem recebe chaves de IA. Apenas a API no Render possui a chave descriptografada em memória volátil.
-- **CORS Restrito:** A API no Render aceita requisições apenas da URL configurada em `ALLOWED_ORIGIN` (domínio da Vercel).
+- **Nenhuma imagem é salva:** Nem no banco de dados, nem em storage S3/Blob, nem em disco do servidor. O buffer existe apenas na memória RAM durante a requisição.
+- **Isolamento total de credenciais:** O navegador nunca acessa o banco diretamente nem recebe chaves de IA. Apenas a API no Render possui a chave descriptografada em memória volátil.
+- **CORS Restrito:** A API no Render aceita requisições apenas da URL configurada em `ALLOWED_ORIGIN` (`https://cyclean-rho.vercel.app`).
 - **First-party Cookies:** Graças ao rewrite do Next.js de `/api/*` para o Render, o cookie de sessão do administrador trafega como first-party (`httpOnly`, `secure`, `sameSite=strict`).
 
 ---
@@ -57,39 +66,29 @@ Este modo é **exclusivo para desenvolvimento local** (usa banco PGlite em `.dev
 
 ## 🚀 Guia Passo a Passo de Deploy
 
-A ordem obrigatória de implantação é: **1º Supabase**, depois **2º Render**, e por último **3º Vercel**.
+A ordem recomendada de implantação é: **1º Render (Banco e API)** e depois **2º Vercel (Front-end)**.
 
 ---
 
-### Passo 1: Supabase (Banco de Dados)
+### Passo 1: Render (Banco de Dados PostgreSQL)
 
-1. Crie um novo projeto no [Supabase](https://supabase.com).
-2. Vá em **Project Settings** > **Database** > **Connection string**.
-3. Selecione o modo **Session** do pooler (Supavisor) na porta `5432`.
-   - Exemplo: `postgresql://postgres.[SEU-PROJETO]:[SUA-SENHA]@aws-0-[REGIAO].pooler.supabase.com:5432/postgres`
-   - *Nota:* Usar o pooler na porta 5432 garante compatibilidade total com IPv4 em servidores como o Render.
-4. Execute as migrations para criar as tabelas com Row Level Security (RLS) ativado:
-   - Pelo Supabase Dashboard: Copie o conteúdo de `supabase/migrations/20261109000000_esquema_inicial.sql` e execute no **SQL Editor**.
-   - Ou via Supabase CLI:
-     ```bash
-     npx supabase db push --db-url "SUA_DATABASE_URL"
-     ```
-
-As três tabelas criadas:
-- `public.config` (chave/valor para provedor de IA, chaves criptografadas e system prompt)
-- `public.videos` (biblioteca de vídeos educativos por material)
-- `public.metricas_diarias` (contadores anônimos de análises por data e material)
+1. Crie uma instância de PostgreSQL no [Render](https://render.com) (ex: `cyclean-db`), de preferência na mesma região do Web Service (ex: `ohio`).
+2. Copie a **Internal Database URL** fornecida pelo Render.
+   - A API inicializa automaticamente o schema do banco (`initDb()`) na primeira execução, criando as tabelas necessárias:
+     - `public.config` (chave/valor para provedor de IA, chaves criptografadas e system prompt)
+     - `public.videos` (biblioteca de vídeos educativos por material)
+     - `public.metricas_diarias` (contadores anônimos de análises por data e material)
 
 ---
 
 ### Passo 2: Render (API Web Service)
 
 1. Faça fork ou envie este repositório para o seu GitHub / GitLab.
-2. No painel do [Render](https://render.com), clique em **New** > **Blueprint** e aponte para o repositório (o Render detectará o arquivo `render.yaml`), ou crie um **Web Service** manual:
+2. No painel do [Render](https://render.com), crie o **Web Service** usando o Blueprint (`render.yaml`) ou configuração manual:
    - **Runtime:** Node
    - **Region:** Ohio (US East)
    - **Root Directory:** `.`
-   - **Build Command:** `corepack enable && pnpm install --frozen-lockfile && pnpm build:api`
+   - **Build Command:** `npm install -g pnpm@9.15.9 && pnpm install --frozen-lockfile --prod=false && pnpm build:api`
    - **Start Command:** `node apps/api/dist/index.js`
    - **Health Check Path:** `/api/health`
 3. Configure as seguintes **Environment Variables** no Render:
@@ -98,32 +97,29 @@ As três tabelas criadas:
 | :--- | :--- | :--- |
 | `NODE_ENV` | `production` | Fixo |
 | `PORT` | `10000` | Fixo |
-| `DATABASE_URL` | String de conexão do pooler do Supabase | Copiada do Supabase |
+| `DATABASE_URL` | URL de conexão interna do Render Postgres | Copiada do banco no Render |
 | `ENCRYPTION_KEY` | Chave de 32 bytes para AES-256-GCM | Gerar com: `pnpm gen-key` |
 | `SESSION_SECRET` | Chave secreta para assinatura dos cookies | Gerar com: `pnpm gen-key` |
 | `ADMIN_USER` | Nome de usuário único do administrador | Ex: `admin` |
 | `ADMIN_PASSWORD_HASH` | Hash argon2id da senha de administração | Gerar com: `pnpm hash-password "sua-senha"` |
 | `ADMIN_ROUTE` | Rota secreta do painel no front-end | `painel-x7` |
-| `ALLOWED_ORIGIN` | URL pública da Vercel (sem barra no final) | Ex: `https://descarta.vercel.app` |
-
-4. Inicie o deploy. Ao finalizar, copie a URL gerada pelo Render (ex: `https://descarta-api.onrender.com`).
+| `ALLOWED_ORIGIN` | URL pública da Vercel (sem barra no final) | `https://cyclean-rho.vercel.app` |
 
 ---
 
 ### Passo 3: Vercel (Front-end Web)
 
-1. No painel da [Vercel](https://vercel.com), clique em **Add New...** > **Project** e importe o mesmo repositório.
+1. No painel da [Vercel](https://vercel.com), importe o repositório.
 2. Defina o **Root Directory** como `apps/web`.
 3. A Vercel detectará automaticamente o framework Next.js.
 4. Adicione as seguintes **Environment Variables**:
 
 | Variável | Valor |
 | :--- | :--- |
-| `API_URL` | URL do seu serviço no Render (ex: `https://descarta-api.onrender.com`) |
-| `NEXT_PUBLIC_SITE_URL` | URL do seu site na Vercel (ex: `https://descarta.vercel.app`) |
+| `API_URL` | `https://descarta-api-fa7a.onrender.com` |
+| `NEXT_PUBLIC_SITE_URL` | `https://cyclean-rho.vercel.app` |
 
-5. Clique em **Deploy**.
-6. Após o deploy, certifique-se de que a URL final da Vercel foi colocada na variável `ALLOWED_ORIGIN` no Render.
+5. Clique em **Deploy**. O Next.js fará o proxy transparente de `/api/*` diretamente para o Render.
 
 ---
 
