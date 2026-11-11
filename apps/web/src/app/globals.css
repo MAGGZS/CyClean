@@ -152,20 +152,33 @@ body {
   .glass-surface {
     position: relative;
     background: linear-gradient(
-      145deg,
+      140deg,
       rgba(242, 243, 231, 0.08) 0%,
-      rgba(242, 243, 231, 0.035) 45%,
-      rgba(242, 243, 231, 0.015) 100%
+      rgba(242, 243, 231, 0.03) 50%,
+      rgba(242, 243, 231, 0.01) 100%
     );
-    -webkit-backdrop-filter: blur(28px) saturate(140%);
-    backdrop-filter: blur(28px) saturate(140%);
-    border: 1px solid rgba(242, 243, 231, 0.16);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(242, 243, 231, 0.2);
     border-radius: var(--radius-card);
     box-shadow:
-      0 28px 56px -12px rgba(0, 0, 0, 0.55),
-      0 10px 24px -6px rgba(0, 0, 0, 0.35),
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-      inset 0 -1px 2px 0 rgba(0, 0, 0, 0.3);
+      0 20px 40px -12px rgba(0, 0, 0, 0.4),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
+      inset 0 0 24px 0 rgba(255, 255, 255, 0.02);
+  }
+
+  .glass-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
   }
 
   .glass-bubble {

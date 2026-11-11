@@ -61,7 +61,7 @@ export function UploadCard({
   const escolher = () => arquivoRef.current?.click();
 
   return (
-    <div ref={raiz} className="glass-surface flex h-full flex-col justify-between p-3">
+    <div ref={raiz} className="glass-surface flex h-full flex-col justify-between p-3 rounded-[var(--radius-card)] overflow-hidden">
       <input
         ref={arquivoRef}
         type="file"
@@ -111,10 +111,10 @@ export function UploadCard({
             setArrastando(false);
             onArquivo(e.dataTransfer.files?.[0]);
           }}
-          className={`group flex flex-1 min-h-0 cursor-pointer flex-col justify-between rounded-[20px] border border-dashed p-6 transition-all duration-200 sm:p-8 ${
+          className={`group relative flex flex-1 min-h-0 cursor-pointer flex-col justify-between rounded-[22px] border border-dashed p-6 transition-all duration-300 sm:p-8 ${
             arrastando
-              ? "border-mint-300 bg-paper-50/[0.08]"
-              : "border-paper-50/20 bg-paper-50/[0.02] hover:border-mint-300/60 hover:bg-paper-50/[0.04]"
+              ? "border-mint-300 bg-mint-300/[0.12] shadow-[0_0_30px_-5px_rgba(150,188,161,0.35)]"
+              : "border-paper-50/25 bg-paper-50/[0.03] backdrop-blur-sm hover:border-mint-300/70 hover:bg-paper-50/[0.06] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.12)]"
           }`}
         >
           <GlassIcon

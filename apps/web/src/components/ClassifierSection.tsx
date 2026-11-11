@@ -61,8 +61,17 @@ function Mensagem({
 
   return (
     <div ref={ref} data-analise={analise || undefined} className="flex gap-3">
-      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-forest-700 text-paper-50">
-        <Marca className="h-4 w-4" />
+      <span className="mt-1 flex shrink-0 items-center justify-center">
+        <GlassIcon
+          plate="circle"
+          size={32}
+          radius="50%"
+          spread={0.22}
+          plateBg="linear-gradient(135deg, rgba(150, 188, 161, 0.5) 0%, rgba(47, 90, 69, 0.9) 100%)"
+          ink="var(--paper-50)"
+        >
+          <Marca className="h-3.5 w-3.5" />
+        </GlassIcon>
       </span>
       <div className="min-w-0 flex-1">
         <span className="sr-only">CYCLEAN: </span>
@@ -324,7 +333,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
     <section id="descartar" ref={raiz} className="frame scroll-mt-0">
       <div className="absolute inset-0 -z-10">
         <Image src="/images/hero-forest.jpg" alt="" fill sizes="100vw" className="object-cover object-bottom" />
-        <div className="absolute inset-0 bg-forest-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-forest-900/75 via-forest-900/40 to-forest-900/80" />
       </div>
       <div className="pointer-events-none absolute inset-0 -z-10">
         <Noise />
@@ -342,7 +351,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
 
         {/* 45% envio / 55% conversa; altura estática e fixa em ambas as colunas */}
         <div data-colunas className="mt-12 grid grid-cols-1 items-start gap-6 lg:mt-16 lg:grid-cols-[45fr_55fr]">
-          <div data-col="esq" className="flex h-[34rem] sm:h-[38rem] lg:h-[42rem] max-h-[34rem] sm:max-h-[38rem] lg:max-h-[42rem] flex-col overflow-hidden">
+          <div data-col="esq" className="flex h-[34rem] sm:h-[38rem] lg:h-[42rem] max-h-[34rem] sm:max-h-[38rem] lg:max-h-[42rem] flex-col">
             <UploadCard
               imagem={imagem}
               analisando={analisando}
