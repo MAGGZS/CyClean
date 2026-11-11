@@ -197,30 +197,53 @@ interface ChatParams {
   onDelta: (chunk: string) => void;
 }
 
+function sanitizarTextoChat(texto: string): string {
+  const limpo = texto.trim();
+  if (limpo.startsWith("{") && limpo.endsWith("}")) {
+    try {
+      const obj = JSON.parse(limpo);
+      if (typeof obj.mensagem === "string") return obj.mensagem;
+    } catch {}
+  }
+  return texto;
+}
+
 export async function executarChatIA({ contexto, historico, pergunta, onDelta }: ChatParams): Promise<void> {
   const cfg = await carregarConfigIA();
   if (!cfg.chave) {
     throw new Error("Chave de IA não configurada.");
   }
 
+  const promptSistemaChat = `Você é o assistente virtual do CYCLEAN, especialista em separação de materiais, reciclagem e descarte sustentável no Brasil (normas CONAMA nº 275/2001 e Política Nacional de Resíduos Sólidos).
+Sua missão é conversar diretamente com o usuário com linguagem natural, amigável, clara, concisa e humana.
+REGRAS OBRIGATÓRIAS:
+- Responda SEMPRE em texto comum corrido em português (linguagem natural).
+- NUNCA responda em formato JSON. Jamais use estruturas como {"itens": ...} ou {"mensagem": ...}.
+- Responda diretamente à dúvida ou comentário do usuário.`;
+
   const promptContexto = contexto
     ? `CONTEXTO DA ANÁLISE PRÉVIA DA FOTO:
 Itens identificados:
 ${JSON.stringify(contexto.itens, null, 2)}
-Mensagem original: "${contexto.mensagem}"
+Mensagem original da análise: "${contexto.mensagem}"
 
 Instruções para o chat:
 Responda às dúvidas do usuário sobre o descarte desse(s) material(is) com precisão técnica e tom humano, direto e amigável. Não invente procedimentos e alerte sobre contaminações comuns (ex.: gordura em papelão impede reciclagem e vai para lixo orgânico/comum; lavar embalagens plásticas e latas para não atrair vetores). Seja conciso e sem floreios.`
-    : `Você é o Descarta, especialista em separação e descarte sustentável no Brasil. Responda de forma concisa e prática às dúvidas de reciclagem e descarte consciente.`;
+    : `O usuário está conversando ou tirando dúvidas gerais sobre reciclagem, descarte de materiais ou sustentabilidade.
+Responda de forma prática, prestativa e objetiva. Se for relevante, convide-o a enviar uma foto do objeto para análise detalhada da lixeira correta.`;
+
+  const systemMessage = `${promptSistemaChat}\n\n${promptContexto}`;
+
+  const historicoLimpo = historico.map((m) => ({
+    role: (m.papel === "usuario" ? "user" : "assistant") as "user" | "assistant",
+    content: sanitizarTextoChat(m.texto),
+  }));
 
   if (cfg.provedor === "groq") {
     const groq = new Groq({ apiKey: cfg.chave });
     const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
-      { role: "system", content: `${cfg.system_prompt}\n\n${promptContexto}` },
-      ...historico.map((m) => ({
-        role: (m.papel === "usuario" ? "user" : "assistant") as "user" | "assistant",
-        content: m.texto,
-      })),
+      { role: "system", content: systemMessage },
+      ...historicoLimpo,
       { role: "user", content: pergunta },
     ];
 
@@ -239,7 +262,7 @@ Responda às dúvidas do usuário sobre o descarte desse(s) material(is) com pre
     const client = new Anthropic({ apiKey: cfg.chave });
     const messages: Anthropic.MessageParam[] = historico.map((m) => ({
       role: m.papel === "usuario" ? "user" : "assistant",
-      content: m.texto,
+      content: sanitizarTextoChat(m.texto),
     }));
     messages.push({ role: "user", content: pergunta });
 
@@ -247,7 +270,7 @@ Responda às dúvidas do usuário sobre o descarte desse(s) material(is) com pre
       model: cfg.modelo || "claude-sonnet-4-5",
       max_tokens: 1024,
       temperature: 0.3,
-      system: `${cfg.system_prompt}\n\n${promptContexto}`,
+      system: systemMessage,
       stream: true,
       messages,
     });
@@ -260,11 +283,8 @@ Responda às dúvidas do usuário sobre o descarte desse(s) material(is) com pre
   } else if (cfg.provedor === "openai") {
     const client = new OpenAI({ apiKey: cfg.chave });
     const messages: OpenAI.ChatCompletionMessageParam[] = [
-      { role: "system", content: `${cfg.system_prompt}\n\n${promptContexto}` },
-      ...historico.map((m) => ({
-        role: (m.papel === "usuario" ? "user" : "assistant") as "user" | "assistant",
-        content: m.texto,
-      })),
+      { role: "system", content: systemMessage },
+      ...historicoLimpo,
       { role: "user", content: pergunta },
     ];
 
@@ -281,14 +301,24 @@ Responda às dúvidas do usuário sobre o descarte desse(s) material(is) com pre
     }
   } else if (cfg.provedor === "gemini") {
     const ai = new GoogleGenAI({ apiKey: cfg.chave });
-    const contents: any[] = historico.map((m) => ({
-      role: m.papel === "usuario" ? "user" : "model",
-      parts: [{ text: m.texto }],
-    }));
-    contents.push({
-      role: "user",
-      parts: [{ text: `${promptContexto}\n\nPergunta do usuário: ${pergunta}` }],
-    });
+    const contents: any[] = [
+      {
+        role: "user",
+        parts: [{ text: `Instruções do Sistema:\n${systemMessage}` }],
+      },
+      {
+        role: "model",
+        parts: [{ text: "Entendido. Responderei diretamente em texto humano e natural, sem nenhum formato JSON." }],
+      },
+      ...historico.map((m) => ({
+        role: m.papel === "usuario" ? "user" : "model",
+        parts: [{ text: sanitizarTextoChat(m.texto) }],
+      })),
+      {
+        role: "user",
+        parts: [{ text: pergunta }],
+      },
+    ];
 
     const stream = await ai.models.generateContentStream({
       model: cfg.modelo || "gemini-2.5-flash",

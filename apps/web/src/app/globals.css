@@ -250,7 +250,20 @@ body {
   /* Barra de rolagem do chat */
   .rolagem-fina {
     scrollbar-width: thin;
-    scrollbar-color: rgba(242, 243, 231, 0.18) transparent;
+    scrollbar-color: rgba(242, 243, 231, 0.22) transparent;
+  }
+  .rolagem-fina::-webkit-scrollbar {
+    width: 6px;
+  }
+  .rolagem-fina::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .rolagem-fina::-webkit-scrollbar-thumb {
+    background-color: rgba(242, 243, 231, 0.2);
+    border-radius: 9999px;
+  }
+  .rolagem-fina::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(242, 243, 231, 0.35);
   }
 
   /* Faixa das lixeiras rola na horizontal no celular, sem barra aparente */

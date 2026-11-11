@@ -72,9 +72,22 @@ function Mensagem({
 }
 
 function Balao({ children }: { children: ReactNode }) {
+  let conteudo = children;
+  if (typeof children === "string") {
+    const limpo = children.trim();
+    if (limpo.startsWith("{") && limpo.endsWith("}")) {
+      try {
+        const obj = JSON.parse(limpo);
+        if (typeof obj.mensagem === "string") {
+          conteudo = obj.mensagem;
+        }
+      } catch {}
+    }
+  }
+
   return (
-    <div className="w-fit max-w-full whitespace-pre-wrap rounded-[20px] rounded-tl-[6px] bg-paper-50/[0.06] px-4 py-3 text-sm leading-relaxed text-paper-50">
-      {children}
+    <div className="w-fit max-w-full whitespace-pre-wrap rounded-[20px] rounded-tl-[6px] border border-paper-50/10 bg-paper-50/[0.08] px-4 py-3 text-sm leading-relaxed text-paper-50 shadow-sm">
+      {conteudo}
     </div>
   );
 }
@@ -288,9 +301,19 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
       setRespondendo(false);
     }
 
+    let textoResposta = resposta.trim();
+    if (textoResposta.startsWith("{") && textoResposta.endsWith("}")) {
+      try {
+        const obj = JSON.parse(textoResposta);
+        if (typeof obj.mensagem === "string") {
+          textoResposta = obj.mensagem;
+        }
+      } catch {}
+    }
+
     novaEntrada({
       tipo: "ia",
-      texto: resposta.trim() || (falha ? "Não consegui responder agora. Tente perguntar de novo." : "Sem resposta."),
+      texto: textoResposta || (falha ? "Não consegui responder agora. Tente perguntar de novo." : "Sem resposta."),
     });
   };
 
@@ -316,9 +339,9 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
           </h2>
         </div>
 
-        {/* 45% envio / 55% conversa; empilhado no celular, envio em cima */}
+        {/* 45% envio / 55% conversa; altura estática e fixa em ambas as colunas */}
         <div data-colunas className="mt-12 grid grid-cols-1 items-start gap-6 lg:mt-16 lg:grid-cols-[45fr_55fr]">
-          <div data-col="esq">
+          <div data-col="esq" className="flex h-[34rem] sm:h-[38rem] lg:h-[42rem] max-h-[34rem] sm:max-h-[38rem] lg:max-h-[42rem] flex-col overflow-hidden">
             <UploadCard
               imagem={imagem}
               analisando={analisando}
@@ -331,19 +354,31 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
 
           <div
             data-col="dir"
-            className="flex h-[36rem] flex-col overflow-hidden rounded-[28px] bg-forest-900/90 lg:h-[min(44rem,calc(100svh-6rem))]"
+            className="glass-surface flex h-[34rem] sm:h-[38rem] lg:h-[42rem] max-h-[34rem] sm:max-h-[38rem] lg:max-h-[42rem] flex-col overflow-hidden"
           >
+            {/* Cabeçalho do assistente */}
+            <div className="flex shrink-0 items-center justify-between border-b border-paper-50/10 px-5 py-4 sm:px-6">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-300 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-mint-300" />
+                </span>
+                <span className="text-sm font-semibold tracking-wide text-paper-50">Assistente CYCLEAN</span>
+              </div>
+              <span className="text-xs font-mono text-sand-200/70">IA Conectada</span>
+            </div>
+
             <div
               ref={rolagem}
               role="log"
               aria-live="polite"
               aria-label="Conversa com o CYCLEAN"
               tabIndex={0}
-              className="rolagem-fina relative flex-1 space-y-5 overflow-y-auto overscroll-contain p-5 sm:p-6"
+              className="rolagem-fina relative flex-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-5 sm:p-6"
             >
               <Mensagem lado="ia">
                 <Balao>
-                  Envie a foto de uma embalagem, garrafa, resto ou aparelho. Eu identifico o material, digo em
+                  Envie a foto de uma embalagem, garrafa, resto ou aparelho ao lado. Eu identifico o material, digo em
                   qual lixeira ele vai e como preparar. Depois é só perguntar o que ficou em dúvida.
                 </Balao>
               </Mensagem>
@@ -378,7 +413,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
             </div>
 
             {contexto && !ocupado && entradas.length === 1 && (
-              <div className="flex flex-wrap gap-2 px-5 pb-3 sm:px-6">
+              <div className="flex shrink-0 flex-wrap gap-2 px-5 pb-3 sm:px-6">
                 {SUGESTOES.map((s) => (
                   <button
                     key={s}
@@ -397,7 +432,7 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
                 e.preventDefault();
                 perguntar(pergunta);
               }}
-              className="flex items-center gap-2 border-t border-paper-50/15 p-3"
+              className="flex shrink-0 items-center gap-2 border-t border-paper-50/10 p-3 sm:p-4"
             >
               <label htmlFor="pergunta" className="sr-only">
                 Pergunta sobre o descarte
@@ -409,14 +444,14 @@ export function ClassifierSection({ onAbrirVideo }: { onAbrirVideo: (id: string,
                 onChange={(e) => setPergunta(e.target.value)}
                 maxLength={1000}
                 autoComplete="off"
-                placeholder={contexto ? "Pergunte sobre esse material" : "Pergunte sobre descarte"}
-                className="h-12 min-w-0 flex-1 rounded-full bg-paper-50/[0.06] px-5 text-sm text-paper-50 placeholder:text-sand-200/80 focus-visible:outline-offset-0"
+                placeholder={contexto ? "Pergunte sobre esse material..." : "Pergunte sobre descarte..."}
+                className="h-12 min-w-0 flex-1 rounded-full border border-paper-50/10 bg-paper-50/[0.04] px-5 text-sm text-paper-50 placeholder:text-sand-200/60 focus:border-mint-300 focus:outline-none focus:ring-1 focus:ring-mint-300/30"
               />
               <button
                 type="submit"
                 disabled={!pergunta.trim() || ocupado}
                 aria-label="Enviar pergunta"
-                className="btn-round h-12 w-12 bg-mint-300 text-forest-900"
+                className="btn-round h-12 w-12 bg-mint-300 text-forest-900 transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
               >
                 <ArrowUp className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
               </button>

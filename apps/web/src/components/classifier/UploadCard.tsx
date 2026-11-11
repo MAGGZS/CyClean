@@ -60,7 +60,7 @@ export function UploadCard({
   const escolher = () => arquivoRef.current?.click();
 
   return (
-    <div ref={raiz} className="glass-surface flex flex-col p-3">
+    <div ref={raiz} className="glass-surface flex h-full flex-col justify-between p-3">
       <input
         ref={arquivoRef}
         type="file"
@@ -110,21 +110,25 @@ export function UploadCard({
             setArrastando(false);
             onArquivo(e.dataTransfer.files?.[0]);
           }}
-          className={`flex min-h-[20rem] cursor-pointer flex-col items-start justify-between rounded-[16px] border border-dashed p-6 transition-colors duration-200 md:min-h-[24rem] lg:min-h-[32rem] ${
-            arrastando ? "border-mint-300 bg-paper-50/10" : "border-paper-50/30 hover:border-paper-50/60"
+          className={`group flex flex-1 min-h-0 cursor-pointer flex-col justify-between rounded-[20px] border border-dashed p-6 transition-all duration-200 sm:p-8 ${
+            arrastando
+              ? "border-mint-300 bg-paper-50/[0.08]"
+              : "border-paper-50/20 bg-paper-50/[0.02] hover:border-mint-300/60 hover:bg-paper-50/[0.04]"
           }`}
         >
-          <ImagePlus className="h-8 w-8 text-mint-300" strokeWidth={1.25} aria-hidden="true" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-paper-50/10 bg-paper-50/[0.05] text-mint-300 transition-transform group-hover:scale-105">
+            <ImagePlus className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
+          </div>
 
           <div className="w-full">
-            <p className="titulo text-3xl text-paper-50">
+            <p className="titulo text-2xl text-paper-50 sm:text-3xl">
               {arrastando ? "Pode soltar" : "Arraste a foto para cá"}
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-sand-200">
+            <p className="mt-2.5 max-w-md text-sm leading-relaxed text-sand-200 text-pretty">
               Chegue perto do objeto e use boa luz. Vale mais de um item na mesma foto.
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={(e) => {
@@ -147,27 +151,27 @@ export function UploadCard({
                 Tirar foto
               </button>
             </div>
-            <p className="mt-4 text-xs text-sand-200">JPG, PNG, WEBP ou HEIC, até 8 MB</p>
+            <p className="mt-4 text-xs font-medium text-sand-200/60">JPG, PNG, WEBP ou HEIC, até 8 MB</p>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="flex flex-1 min-h-0 flex-col justify-between">
           <div
             data-previa
-            className="relative aspect-[4/3] overflow-hidden rounded-[16px] bg-forest-900"
+            className="relative flex-1 min-h-0 overflow-hidden rounded-[20px] border border-paper-50/10 bg-forest-900"
           >
             {imagem.previa ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={imagem.previa}
                 alt="Foto que você enviou para análise"
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain p-2"
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
                 <ImagePlus className="h-7 w-7 text-mint-300" strokeWidth={1.25} aria-hidden="true" />
-                <p className="text-sm text-paper-50">{imagem.nome}</p>
-                <p className="text-xs text-sand-200">
+                <p className="text-sm font-medium text-paper-50">{imagem.nome}</p>
+                <p className="text-xs text-sand-200/70">
                   Seu navegador não mostra prévia de HEIC, mas a foto pode ser analisada.
                 </p>
               </div>
@@ -212,7 +216,7 @@ export function UploadCard({
         )}
       </div>
 
-      <p className="mt-1 flex items-center gap-2.5 border-t border-paper-50/15 px-3 pb-2 pt-4 text-xs text-sand-200">
+      <p className="mt-2 flex items-center gap-2.5 border-t border-paper-50/15 px-3 pb-2 pt-4 text-xs text-sand-200/70">
         <ShieldCheck className="h-4 w-4 shrink-0 text-mint-300" strokeWidth={1.5} aria-hidden="true" />
         Sua foto é analisada e descartada na hora. Nada é salvo.
       </p>
